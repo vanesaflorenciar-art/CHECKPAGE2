@@ -1,0 +1,169 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>PAGE CHECK · Admin</title>
+<style>body{font:16px system-ui;max-width:640px;margin:30px auto;padding:0 16px;color:#241a3b}input,button{font:inherit;padding:10px 14px;border-radius:10px;border:1px solid #cfc6ea}button{background:#3d1f7a;color:#fff;border:0;cursor:pointer}.k{display:inline-block;background:#efeafc;border-radius:12px;padding:12px 16px;margin:4px}</style></head><body>
+<h2>PAGE CHECK · Panel privado</h2><input id=t type=password placeholder="Token de administrador"> <button id=go>Entrar</button><div id=o></div>
+<script>
+const H=()=>({'x-admin-token':document.getElementById('t').value});
+document.getElementById('go').onclick=async()=>{const o=document.getElementById('o'),r=await fetch('/api/admin',{headers:H()});
+if(!r.ok){o.textContent='No autorizado';return}const d=await r.json(),e=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+o.innerHTML=`<p><span class=k>Registros<br><b>${d.registros}</b></span><span class=k>Auditorías<br><b>${d.auditorias}</b></span><span class=k>Aceptaron promociones<br><b>${d.conConsentimiento}</b></span><span class=k>Puntaje promedio<br><b>${d.puntajePromedio??'-'}</b></span></p><h3>Problemas más frecuentes</h3><ol>${d.problemasFrecuentes.map(p=>`<li>${e(p.pregunta)} (${p.veces})</li>`).join('')}</ol><button id=ex>Exportar contactos autorizados (CSV)</button>`;
+document.getElementById('ex').onclick=async()=>{const x=await fetch('/api/admin?export=csv',{headers:H()}),a=document.createElement('a');a.href=URL.createObjectURL(await x.blob());a.download='contactos-autorizados.csv';a.click()}};
+</script></body></html>
+
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PAGE CHECK · ¿Tu página web está preparada para vender?</title>
+<meta name="description" content="Auditoría gratuita de tu página web: puntaje, diagnóstico y plan de acción para vender más.">
+<style>
+:root{--v:#3d1f7a;--v2:#5b34b0;--lav:#efeafc;--c:#ff6b5e;--t:#241a3b;--m:#6b6285;--ok:#2f9e6e}
+*{box-sizing:border-box}body{margin:0;font:16px/1.55 Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--t);background:#faf9ff}
+.wrap{max-width:760px;margin:0 auto;padding:20px 18px 60px}
+.brand{font-weight:800;letter-spacing:.1em;color:var(--v);display:flex;gap:8px;align-items:center;margin:6px 0 26px}.brand i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+h1{font-size:clamp(28px,6vw,42px);line-height:1.15;margin:0 0 12px;color:var(--v)}h2{color:var(--v);margin:0 0 12px;line-height:1.25}h3{color:var(--v);margin:22px 0 8px}
+.sub{color:var(--m);font-size:18px}.card{background:#fff;border:1px solid #e6e0f5;border-radius:18px;padding:22px;margin:16px 0;animation:in .4s ease both}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.ben{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:18px 0}.ben div{background:var(--lav);border-radius:14px;padding:12px 14px;color:var(--v)}
+label{display:block;font-weight:600;margin:0 0 14px}input[type=text],input[type=email],input:not([type]){display:block;width:100%;margin-top:6px;padding:13px 14px;border:1.5px solid #d9d0f0;border-radius:12px;font:inherit}
+input:focus{outline:0;border-color:var(--v2);box-shadow:0 0 0 3px #5b34b022}.chk{display:flex;gap:10px;font-weight:400;font-size:14px;color:var(--m)}.chk input{margin-top:4px;accent-color:var(--v)}
+.btn{background:var(--v);color:#fff;border:0;border-radius:12px;padding:14px 22px;font:700 15px inherit;font-family:inherit;letter-spacing:.03em;cursor:pointer;transition:.15s}.btn:hover{background:var(--v2)}
+.btn:disabled{opacity:.4;cursor:not-allowed}.btn.ghost{background:#fff;color:var(--v);border:1.5px solid #d9d0f0}.btn.coral{background:var(--c)}.btn.coral:hover{background:#ee5a4d}
+.err{color:#c0392b;min-height:1.2em;font-size:14px;margin:0 0 10px}.bar{height:8px;background:var(--lav);border-radius:9px;overflow:hidden}.bar span{display:block;height:100%;background:var(--c);transition:width .4s}
+.cat{color:var(--m);font-size:14px;margin:12px 0 18px}.opt{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid #d9d0f0;border-radius:14px;padding:15px 16px;margin:10px 0;font:inherit;cursor:pointer;transition:.15s}
+.opt:hover{border-color:var(--v2)}.opt.on{border-color:var(--v);background:var(--lav);font-weight:600}.nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.spin{width:34px;height:34px;border:4px solid var(--lav);border-top-color:var(--v);border-radius:50%;animation:r 1s linear infinite;margin:6px 0 12px}@keyframes r{to{transform:rotate(360deg)}}
+.gauge{display:flex;flex-direction:column;align-items:center;text-align:center}.gauge svg{width:210px;height:210px}.gauge .n{font-size:52px;font-weight:800;fill:var(--v)}
+.lbl{font-weight:700;color:var(--v);font-size:20px}.row{display:flex;justify-content:space-between;gap:10px;font-size:14px;margin-top:12px}.trk{height:9px;background:var(--lav);border-radius:9px;overflow:hidden;margin-top:4px}.trk span{display:block;height:100%;background:var(--v2);border-radius:9px;transition:width 1s}
+.rec{border-left:4px solid var(--lav);padding:4px 0 4px 12px;margin:12px 0}.rec small{color:var(--m)}.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:20px;padding:2px 10px;margin-right:6px}
+.Alta{background:#ffe3e0;color:#b23a2e}.Media{background:#fff0d6;color:#9a6a00}.Baja{background:#e2f5ec;color:#1f7a52}.act{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+.cta{background:var(--v);color:#fff;border-radius:18px;padding:26px;margin:22px 0}.cta h2{color:#fff}.note{font-size:14px;color:var(--m)}ul.f{padding-left:18px}ul.f li{margin:4px 0}
+</style></head><body><div class="wrap"><div class="brand"><i></i>PAGE CHECK</div><main id="app"></main></div>
+<script src="questions.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const PACK_URL="https://creadores-digitales-pack-12x1.impultienda.ar"; // URL de venta del Pack Creadores Digitales
+const {CATS,Q}=window.QS,app=document.getElementById('app'),$=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const api=async(p,b)=>{const r=await fetch('/api/'+p,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Ocurrió un error. Probá de nuevo.');return d};
+const OPT=[['Sí, está resuelto',5],['Más o menos, podría mejorarlo',2.5],['No, todavía no lo tengo',0]];
+const MAIL={ok:'✓ Te enviamos el informe a tu email.',no:'El envío por email todavía no está activo: descargá tu informe en PDF.',err:'No pudimos guardar o enviar tu informe por email. Podés descargarlo igual en PDF.'};
+let S={lead:JSON.parse(sessionStorage.getItem('pc_lead')||'null'),url:'',scan:null,ans:Array(20).fill(null),i:0,res:null,mail:''};
+const shell=h=>{app.innerHTML=h;window.scrollTo(0,0)},err=m=>{$('#er').textContent=m};
+
+function welcome(){
+  shell(`<h1>¿Tu página web está preparada para vender?</h1><p class="sub">Descubrí qué está funcionando, qué puede estar alejando a tus clientes y qué necesitás mejorar para convertir más visitas en ventas.</p>
+  <div class="ben"><div><b>Auditoría gratuita</b></div><div><b>Diagnóstico personalizado</b></div><div><b>Recomendaciones prácticas</b></div></div>
+  <form class="card" id="f" novalidate><label>Nombre<input id="n" autocomplete="given-name" maxlength="80"></label><label>Email<input id="e" type="email" autocomplete="email" maxlength="120"></label>
+  <label class="chk"><input id="c" type="checkbox"><span>Quiero recibir consejos, herramientas gratuitas y promociones de PAGE CHECK por correo electrónico. Puedo darme de baja cuando quiera.</span></label>
+  <p class="err" id="er"></p><button class="btn">COMENZAR MI AUDITORÍA</button></form>`);
+  $('#f').onsubmit=async ev=>{ev.preventDefault();const n=$('#n').value.trim(),e=$('#e').value.trim(),b=$('#f button');
+    if(n.length<2)return err('Escribí tu nombre.');if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e))return err('Revisá tu email.');
+    b.disabled=true;try{const d=await api('register',{name:n,email:e,consent:$('#c').checked});S.lead={id:d.id,name:d.name};sessionStorage.setItem('pc_lead',JSON.stringify(S.lead));urlView()}catch(x){err(x.message);b.disabled=false}};
+}
+function urlView(msg=''){
+  shell(`<h2>¿Qué página querés analizar?</h2><form class="card" id="f" novalidate><label>Dirección de tu web<input id="u" placeholder="https://minegocio.com" value="${esc(S.url)}" inputmode="url" autocapitalize="off"></label><p class="err" id="er">${esc(msg)}</p><button class="btn">ANALIZAR MI PÁGINA</button></form>`);
+  $('#f').onsubmit=async ev=>{ev.preventDefault();let u=$('#u').value.trim();if(!u)return err('Ingresá la dirección de tu web.');if(!/^https?:\/\//i.test(u))u='https://'+u;
+    try{new URL(u)}catch{return err('La dirección no parece válida.')}
+    S.url=u;shell(`<div class="card"><div class="spin"></div><p>Analizando ${esc(u)}…</p></div>`);
+    try{const d=await api('analyze',{url:u});S.scan=d.ok?d.scan:null;S.scanErr=d.ok?'':d.error}catch(x){S.scan=null;S.scanErr=x.message}
+    scanView()};
+}
+function facts(s){return[
+  `Título: ${s.title?'«'+s.title+'»':'no se encontró'}`,`Meta descripción: ${s.description?'presente':'no se encontró'}`,
+  `Encabezados: ${s.h1Count} H1 y ${s.h2Count} H2`,`Enlaces detectados: ${s.links} · Botones detectados: ${s.buttons}`,
+  `Imágenes: ${s.images} (${s.imagesNoAlt} sin texto alternativo)`,`Etiqueta viewport para celulares: ${s.viewport?'presente':'no se encontró'}`,`Conexión segura (HTTPS): ${s.https?'sí':'no'}`]}
+const NOTV='No se verificó automáticamente: velocidad real, funcionamiento de cada enlace y calidad del diseño. Eso lo completás con tus respuestas.';
+function scanView(){
+  const s=S.scan;
+  shell(s?`<h2>Esto pudimos verificar de tu página</h2><div class="card"><ul class="f">${facts(s).map(f=>`<li>${esc(f)}</li>`).join('')}</ul><p class="note">${NOTV}${s.textChars<400?' El sitio muestra poco texto en su HTML inicial; si se arma con JavaScript, algunos datos pueden no detectarse.':''}</p><button class="btn" id="go">EMPEZAR EL CUESTIONARIO</button></div>`
+  :`<h2>No pudimos analizar tu sitio automáticamente</h2><div class="card"><p>${esc(S.scanErr)}</p><p>Podés continuar con la evaluación manual: usaremos solo tus respuestas.</p><div class="act"><button class="btn" id="go">CONTINUAR CON EVALUACIÓN MANUAL</button><button class="btn ghost" id="re">Probar otra dirección</button></div></div>`);
+  $('#go').onclick=()=>{S.i=0;quiz()};if($('#re'))$('#re').onclick=()=>urlView();
+}
+function quiz(){
+  const i=S.i,c=i>>2,a=S.ans[i];
+  shell(`<div class="bar"><span style="width:${i/20*100}%"></span></div><p class="cat">Categoría ${c+1} de 5 · ${esc(CATS[c])} — Pregunta ${i+1} de 20</p><h2>${esc(Q[i][0])}</h2>
+  ${OPT.map(o=>`<button class="opt ${a===o[1]?'on':''}" data-v="${o[1]}">${o[0]}</button>`).join('')}
+  <div class="nav"><button class="btn ghost" id="pv" ${i?'':'disabled'}>Anterior</button><button class="btn" id="nx" ${a===null?'disabled':''}>${i===19?'VER MI DIAGNÓSTICO':'Siguiente'}</button></div>`);
+  document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{S.ans[i]=+b.dataset.v;quiz()});
+  $('#pv').onclick=()=>{S.i--;quiz()};$('#nx').onclick=()=>{if(i===19)finish();else{S.i++;quiz()}};
+}
+function calc(){
+  const a=S.ans,cats=CATS.map((n,c)=>({n,p:Math.round(a.slice(c*4,c*4+4).reduce((s,v)=>s+v,0)*5)})),score=Math.round(a.reduce((s,v)=>s+v,0));
+  const order=a.map((v,i)=>({v,i})).sort((x,y)=>x.v-y.v||x.i-y.i),sc=S.scan,recs=[];
+  if(sc){
+    if(!sc.https)recs.push({p:'Alta',t:'Tu sitio no se cargó con HTTPS. Activá el certificado SSL para dar seguridad y confianza.'});
+    if(!sc.viewport)recs.push({p:'Alta',t:'No se detectó la etiqueta viewport: es probable que tu página no se adapte bien a celulares.'});
+    if(!sc.description)recs.push({p:'Media',t:'No se detectó meta descripción. Agregá una de 120 a 155 caracteres que explique tu propuesta.'});
+    if(sc.h1Count!==1)recs.push({p:'Media',t:sc.h1Count?'Se detectaron '+sc.h1Count+' títulos H1. Usá uno solo, con tu propuesta principal.':'No se detectó un título H1. Agregá uno con tu propuesta principal.'});
+    if(sc.imagesNoAlt>0)recs.push({p:'Baja',t:sc.imagesNoAlt+' de '+sc.images+' imágenes no tienen texto alternativo. Agregalo para accesibilidad y SEO.'});
+  }
+  order.filter(o=>o.v<5).forEach(o=>recs.push({p:o.v===0?'Alta':'Media',t:Q[o.i][1],q:Q[o.i][0]}));
+  const R={Alta:0,Media:1,Baja:2};recs.sort((x,y)=>R[x.p]-R[y.p]);
+  const label=score<40?'Necesitás mejorar los fundamentos':score<60?'Hay oportunidades importantes de mejora':score<80?'Vas por buen camino':'Muy buen trabajo';
+  return{score,cats,label,recs,plan:recs.slice(0,5),problems:order.filter(o=>o.v<5).slice(0,3).map(o=>Q[o.i][0]),strengths:a.map((v,i)=>v===5?Q[i][0]:null).filter(Boolean).slice(0,4)};
+}
+async function finish(){
+  S.res=calc();S.mail='';results();
+  try{const d=await api('submit',{leadId:S.lead.id,url:S.url,answers:S.ans,scan:S.scan});S.mail=d.emailSent?'ok':'no'}catch{S.mail='err'}
+  if($('#mail'))$('#mail').textContent=MAIL[S.mail];
+}
+const date=()=>new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
+function results(){
+  const r=S.res,C=2*Math.PI*54;
+  shell(`<div class="card gauge"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="54" fill="none" stroke="#efeafc" stroke-width="10"/><circle id="g" cx="60" cy="60" r="54" fill="none" stroke="#ff6b5e" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C}" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 1.4s ease"/><text id="num" class="n" x="60" y="70" text-anchor="middle" font-size="32">0</text></svg>
+  <div class="lbl">${esc(r.label)}</div><p class="note">${esc(S.lead.name)}, este es el diagnóstico de ${esc(S.url)} · ${date()}</p><p class="note" id="mail">Guardando tu informe…</p></div>
+  <div class="card"><h3 style="margin-top:0">Resultados por categoría</h3>${r.cats.map(c=>`<div class="row"><span>${esc(c.n)}</span><b>${c.p}/100</b></div><div class="trk"><span style="width:0" data-w="${c.p}"></span></div>`).join('')}</div>
+  <div class="card"><h3 style="margin-top:0">Fortalezas</h3>${r.strengths.length?`<ul class="f">${r.strengths.map(s=>`<li>${esc(s.replace(/[¿?]/g,''))}</li>`).join('')}</ul>`:'<p>Todavía no hay fortalezas claras, y eso es una oportunidad: cada mejora suma.</p>'}
+  <h3>Tus principales problemas</h3>${r.problems.length?`<ol class="f">${r.problems.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:'<p>No detectamos problemas en tus respuestas. ¡Excelente!</p>'}</div>
+  <div class="card"><h3 style="margin-top:0">Recomendaciones personalizadas</h3>${r.recs.length?r.recs.map(x=>`<div class="rec"><span class="tag ${x.p}">${x.p}</span>${esc(x.t)}</div>`).join(''):'<p>Sin recomendaciones pendientes por ahora.</p>'}</div>
+  <div class="card"><h3 style="margin-top:0">Plan de acción: tus 5 mejoras prioritarias</h3>${r.plan.length?`<ol class="f">${r.plan.map(x=>`<li>${esc(x.t)}</li>`).join('')}</ol>`:'<p>Mantené tus resultados y revisalos cada mes.</p>'}</div>
+  ${S.scan?`<div class="card"><h3 style="margin-top:0">Datos verificados en tu página</h3><ul class="f">${facts(S.scan).map(f=>`<li>${esc(f)}</li>`).join('')}</ul><p class="note">${NOTV}</p></div>`:'<p class="note">Este diagnóstico se basa solo en tus respuestas: no se pudo analizar el sitio automáticamente.</p>'}
+  <div class="act"><button class="btn" id="pdf">DESCARGAR MI INFORME PDF</button><button class="btn ghost" id="cp">COPIAR MI DIAGNÓSTICO</button><button class="btn ghost" id="rs">VOLVER A REALIZAR LA AUDITORÍA</button></div>
+  <div class="cta"><h2>¿Querés llevar tu emprendimiento digital al siguiente nivel?</h2><p>Descubrí herramientas, recursos y estrategias para crear contenido, trabajar con IA y desarrollar tu negocio digital.</p><a class="btn coral" style="display:inline-block;text-decoration:none" href="${PACK_URL}" target="_blank" rel="noopener">CONOCER PACK CREADORES DIGITALES</a></div>`);
+  setTimeout(()=>{$('#g').style.strokeDashoffset=C*(1-r.score/100);document.querySelectorAll('[data-w]').forEach(e=>e.style.width=e.dataset.w+'%');
+    const t0=performance.now(),tick=t=>{const k=Math.min((t-t0)/1400,1);$('#num').textContent=Math.round(r.score*k);if(k<1)requestAnimationFrame(tick)};requestAnimationFrame(tick)},60);
+  if(S.mail)$('#mail').textContent=MAIL[S.mail];
+  $('#pdf').onclick=pdf;$('#rs').onclick=()=>{S.ans=Array(20).fill(null);S.scan=null;S.i=0;urlView()};
+  $('#cp').onclick=async()=>{try{await navigator.clipboard.writeText(report().map(l=>l[0]).join('\n'));$('#cp').textContent='¡COPIADO!'}catch{$('#cp').textContent='NO SE PUDO COPIAR'}};
+}
+function report(){
+  const r=S.res,L=[];const add=(t,z=10,b=0)=>L.push([t,z,b]);
+  add('PAGE CHECK - Informe de auditoría',18,1);add('Nombre: '+S.lead.name);add('Página evaluada: '+S.url);add('Fecha de auditoría: '+date());
+  add('Puntaje general: '+r.score+'/100 - '+r.label,13,1);add('Resultados por categoría',12,1);r.cats.forEach(c=>add('- '+c.n+': '+c.p+'/100'));
+  add('Problemas detectados',12,1);(r.problems.length?r.problems:['Sin problemas detectados en tus respuestas.']).forEach((p,i)=>add((i+1)+'. '+p));
+  add('Recomendaciones',12,1);r.recs.forEach(x=>add('['+x.p+'] '+x.t));
+  add('Plan de acción: 5 mejoras prioritarias',12,1);r.plan.forEach((x,i)=>add((i+1)+'. '+x.t));
+  if(S.scan){add('Datos verificados en tu página',12,1);facts(S.scan).forEach(f=>add('- '+f));add(NOTV,9)}else add('Diagnóstico basado solo en tus respuestas (no se pudo analizar el sitio).',9);
+  return L;
+}
+function pdf(){
+  if(!window.jspdf)return alert('No se pudo cargar el generador de PDF. Revisá tu conexión e intentá de nuevo.');
+  const d=new window.jspdf.jsPDF({unit:'mm',format:'a4'});let y=20;
+  report().forEach(([t,z,b])=>{d.setFont('helvetica',b?'bold':'normal');d.setFontSize(z);d.setTextColor(b?61:36,b?31:26,b?122:59);
+    d.splitTextToSize(t,180).forEach(l=>{if(y>280){d.addPage();y=20}d.text(l,15,y);y+=z*.5+1.8});y+=b?1.5:.5});
+  d.save('PAGE-CHECK-informe.pdf');
+}
+S.lead?urlView():welcome();
+</script></body></html>
+
+(function(r){if(typeof module!=='undefined'&&module.exports)module.exports=r;else window.QS=r;})({
+CATS:["Mensaje y propuesta de valor","Diseño y confianza","Conversión y ventas","Experiencia del usuario","Medición y seguimiento"],
+Q:[
+["¿En los primeros 5 segundos se entiende qué vendés?","Reescribí tu título y subtítulo para que en 5 segundos se entienda qué vendés y para quién."],
+["¿Está claro a quién está dirigido tu producto o servicio?","Definí tu cliente ideal y nombralo en el texto principal (ej.: «para emprendedoras que…»)."],
+["¿Explicás qué problema resolvés o qué beneficio ofrecés?","Contá qué problema resolvés y qué cambia para el cliente después de comprar."],
+["¿Tu título principal comunica una propuesta atractiva y concreta?","Convertí tu título en una promesa concreta: resultado, para quién y cómo."],
+["¿Tu página tiene un diseño profesional y ordenado?","Ordená la página: más espacio en blanco, tipografías consistentes y jerarquía clara."],
+["¿Se ve correctamente desde un celular?","Probá tu página en un celular real y corregí lo que se corta o queda chico."],
+["¿Incluís testimonios u opiniones reales de clientes?","Pedí testimonios reales a tus clientes (con su permiso) y publicalos cerca del botón principal."],
+["¿Mostrás claramente qué incluye tu producto o servicio?","Listá con claridad qué incluye tu producto o servicio: entregables, formato y alcance."],
+["¿Tenés un botón principal que indica claramente qué hacer?","Definí un único botón principal con un verbo claro (ej.: «Quiero mi plan»)."],
+["¿El botón de compra o contacto está visible?","Mostrá el botón al comienzo de la página y repetilo después de cada sección importante."],
+["¿El proceso de compra o contacto es sencillo?","Reducí pasos y campos del proceso de compra o contacto; ofrecé WhatsApp si aplica."],
+["¿Respondés las dudas frecuentes antes de que el cliente tenga que preguntarte?","Agregá preguntas frecuentes: medios de pago, plazos, envíos, garantías y soporte."],
+["¿Tu página carga rápidamente en el celular?","Medí la velocidad con PageSpeed Insights y reducí el peso de imágenes y scripts."],
+["¿Las imágenes se ven correctamente y están optimizadas?","Comprimí las imágenes (ej.: WebP), revisá que se vean nítidas y agregales texto alternativo."],
+["¿Los enlaces y botones funcionan correctamente?","Hacé clic en cada enlace y botón desde el celular y la computadora y corregí los que fallen."],
+["¿Evitás elementos innecesarios que distraigan de la compra?","Sacá pop-ups, banners y enlaces que distraigan del botón principal."],
+["¿Medís cuántas personas visitan tu página?","Instalá una herramienta de analítica gratuita (ej.: Google Analytics) para conocer tus visitas."],
+["¿Registrás los clics en tus botones de compra o contacto?","Configurá eventos de clic en tus botones de compra o contacto."],
+["¿Sabés cuántas personas inician el checkout y cuántas terminan comprando?","Medí tu embudo (visitas, inicios de checkout, compras) para ver dónde se cae la gente."],
+["¿Revisás periódicamente tus resultados para tomar decisiones?","Reservá un momento fijo cada mes para revisar resultados y decidir una mejora."]
+]});
