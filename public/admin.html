@@ -1,0 +1,10 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>PAGE CHECK · Admin</title>
+<style>body{font:16px system-ui;max-width:640px;margin:30px auto;padding:0 16px;color:#241a3b}input,button{font:inherit;padding:10px 14px;border-radius:10px;border:1px solid #cfc6ea}button{background:#3d1f7a;color:#fff;border:0;cursor:pointer}.k{display:inline-block;background:#efeafc;border-radius:12px;padding:12px 16px;margin:4px}</style></head><body>
+<h2>PAGE CHECK · Panel privado</h2><input id=t type=password placeholder="Token de administrador"> <button id=go>Entrar</button><div id=o></div>
+<script>
+const H=()=>({'x-admin-token':document.getElementById('t').value});
+document.getElementById('go').onclick=async()=>{const o=document.getElementById('o'),r=await fetch('/api/admin',{headers:H()});
+if(!r.ok){o.textContent='No autorizado';return}const d=await r.json(),e=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+o.innerHTML=`<p><span class=k>Registros<br><b>${d.registros}</b></span><span class=k>Auditorías<br><b>${d.auditorias}</b></span><span class=k>Aceptaron promociones<br><b>${d.conConsentimiento}</b></span><span class=k>Puntaje promedio<br><b>${d.puntajePromedio??'-'}</b></span></p><h3>Problemas más frecuentes</h3><ol>${d.problemasFrecuentes.map(p=>`<li>${e(p.pregunta)} (${p.veces})</li>`).join('')}</ol><button id=ex>Exportar contactos autorizados (CSV)</button>`;
+document.getElementById('ex').onclick=async()=>{const x=await fetch('/api/admin?export=csv',{headers:H()}),a=document.createElement('a');a.href=URL.createObjectURL(await x.blob());a.download='contactos-autorizados.csv';a.click()}};
+</script></body></html>
